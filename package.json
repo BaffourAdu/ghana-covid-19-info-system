@@ -10,7 +10,8 @@
   "repository": "https://github.com/BaffourAdu/ghana-covid-19-info-system",
   "author": "Baffour Adu Boampong",
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
+    "dotenv": "^8.2.0",
     "netlify-lambda": "^1.6.3"
   }
 }
