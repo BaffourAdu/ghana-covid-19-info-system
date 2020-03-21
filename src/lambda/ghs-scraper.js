@@ -45,17 +45,18 @@ exports.handler = async (event, context) => {
       const content = $(this)
         .find(".widget-box-status-text")
         .text();
+      const image_url = $(this)
+        .find(".widget-box-picture")
+        .find("img")
+        .attr("src");
       status_updates.push({
         title: $(this)
           .find(".user-status-title")
           .text(),
         body_formatted: content.replace(/\r?\n|\r/g, "<br>").trim(),
         body_raw: content.replace(/\r?\n|\r/g, "").trim(),
-        image: $(this).is(".widget-box-picture")
-          ? $(this)
-              .find(".widget-box-picture")
-              .find("img")
-              .attr("src")
+        image: image_url
+          ? image_url.replace(/^/, "https://ghanahealthservice.org/covid19/")
           : null
       });
     });
