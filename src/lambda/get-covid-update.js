@@ -44,15 +44,11 @@ exports.handler = async (event, context) => {
     const subscribers = await firebaseEmailList();
 		const subscribersEmails = subscribers.map(sub => sub.email);
 		const scraperFunctionResponse = await axios.get(SCRAPER_LAMBDA_FUNCTION);
-		
-		console.log({subscribersEmails})
-		console.log(scraperFunctionResponse.data.number_of_cases, lastScraperRunRecord.number_of_cases)
 
     if (
       scraperFunctionResponse.data.number_of_cases >
       lastScraperRunRecord.number_of_cases
     ) {
-			console.log("Sending update emails")
       const latestStatusUpdate = scraperFunctionResponse.data.status_updates[0];
       await axios.post(EMAIL_LAMBDA_FUNCTION, {
         to: subscribersEmails,
