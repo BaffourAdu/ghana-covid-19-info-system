@@ -49,7 +49,7 @@ exports.handler = async (event, context) => {
         title: $(this)
           .find(".user-status-title")
           .text(),
-        body_formatted: content,
+        body_formatted: content.replace(/\r?\n|\r/g, "<br>").trim(),
         body_raw: content.replace(/\r?\n|\r/g, "").trim(),
         image: $(this).is(".widget-box-picture")
           ? $(this)

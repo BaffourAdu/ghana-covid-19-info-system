@@ -2,7 +2,7 @@ import sendgridMail from "@sendgrid/mail";
 
 require("dotenv").config();
 
-const { SENDGRID_API_KEY } = process.env;
+const { SENDGRID_API_KEY, SENDGRID_FROM_EMAIL } = process.env;
 const headers = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
@@ -11,9 +11,9 @@ const headers = {
 
 const msg = {
   to: "",
-  from: "baffouraduboampong@gmail.com",
+  from: SENDGRID_FROM_EMAIL,
   subject: "COVID-19 Update from Ghana Health Service",
-  html: ""
+  html: "",
 };
 
 exports.handler = async (event, context) => {
