@@ -100,8 +100,9 @@ async function addScraperRun(data) {
 
 function parseEmailBody(title, body, image, cases) {
   return `
-				<h3>${cases} confirmed cases</h3><br><hr><br>
-        <h3>${title}</h3><p>${body}</p> ${image ? `<img src="${image}">` : ``}
+				<h3>${cases} confirmed cases</h3><p>(source: https://ghanahealthservice.org/covid19/)</p><br><hr><br>
+				<h3>${title}</h3><p>${body}</p> ${image ? `<img src="${image}">` : ``}
+				<p>source: https://ghanahealthservice.org/covid19/</p>
     `;
 }
 
