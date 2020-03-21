@@ -42,8 +42,8 @@ exports.handler = async (event, context) => {
   try {
     const lastScraperRunRecord = await lastScraperRunResults();
     const subscribers = await firebaseEmailList();
-		const subscribersEmails = subscribers.map(sub => sub.email);
-		const scraperFunctionResponse = await axios.get(SCRAPER_LAMBDA_FUNCTION);
+    const subscribersEmails = subscribers.map(sub => sub.email);
+    const scraperFunctionResponse = await axios.get(SCRAPER_LAMBDA_FUNCTION);
 
     if (
       scraperFunctionResponse.data.number_of_cases >
@@ -55,7 +55,8 @@ exports.handler = async (event, context) => {
         body: parseEmailBody(
           latestStatusUpdate.title,
           latestStatusUpdate.body_formatted,
-          latestStatusUpdate.image
+          latestStatusUpdate.image,
+          lastScraperRunRecord.number_of_cases
         )
       });
     }
@@ -97,8 +98,9 @@ async function addScraperRun(data) {
   }
 }
 
-function parseEmailBody(title, body, image) {
+function parseEmailBody(title, body, image, cases) {
   return `
+				<h3>${cases} confirmed cases</h3><br><hr><br>
         <h3>${title}</h3><p>${body}</p> ${image ? `<img src="${image}">` : ``}
     `;
 }
