@@ -33,9 +33,9 @@ admin.initializeApp({
 const db = admin.firestore();
 
 exports.handler = async (event, context) => {
-  const requestBody = JSON.parse(event.body);
-  if (requestBody.access_token !== ACCESS_TOKEN)
-    return { statusCode: 401, body: "Unauthorized" };
+  // const requestBody = JSON.parse(event.body);
+  // if (requestBody.access_token !== ACCESS_TOKEN)
+  //   return { statusCode: 401, body: "Unauthorized" };
   if (event.httpMethod !== "GET")
     return { statusCode: 405, body: "Method Not Allowed" };
 
