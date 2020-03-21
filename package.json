@@ -4,7 +4,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:lambda": "netlify-lambda serve src/lambda --config ./webpack.functions.js",
-    "build:lambda": "netlify-lambda build src/lambda--config ./webpack.functions.js"
+    "build:lambda": "netlify-lambda build src/lambda --config ./webpack.functions.js"
   },
   "description": "An information system to update an email lists on status of coronovaris (covid-19)",
   "repository": "https://github.com/BaffourAdu/ghana-covid-19-info-system",
