@@ -36,7 +36,7 @@ exports.handler = async (event, context) => {
   const requestBody = JSON.parse(event.body);
   if (requestBody.access_token !== ACCESS_TOKEN)
     return { statusCode: 401, body: "Unauthorized" };
-  if (event.httpMethod !== "POST")
+  if (event.httpMethod !== "GET")
     return { statusCode: 405, body: "Method Not Allowed" };
 
   try {
@@ -61,7 +61,7 @@ exports.handler = async (event, context) => {
       });
     }
 
-    await addScraperRun(scraperFunctionResponse.data);
+		const logResponse = await addScraperRun(scraperFunctionResponse.data);
 
     return {
       statusCode: 200,
@@ -91,7 +91,7 @@ async function firebaseEmailList() {
 async function addScraperRun(data) {
   try {
     const log = { ...data, timestamp: admin.firestore.Timestamp.now() };
-    await db.collection("logs").add(log);
+   return await db.collection("logs").add(log);
   } catch (error) {
     console.log({ error });
     return { statusCode: 422, headers, body: String(error) };
@@ -109,7 +109,7 @@ async function lastScraperRunResults() {
   const lastCase = [];
   const cases = await db
     .collection("logs")
-    .orderBy("timestamp")
+    .orderBy("timestamp", 'desc')
     .limit(5)
     .get();
   // Get the last document
