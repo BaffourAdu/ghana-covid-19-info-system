@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:lambda": "netlify-lambda serve src/lambda",
+    "start:lambda": "netlify-lambda serve src/lambda --config ./webpack.functions.js",
     "build:lambda": "netlify-lambda build src/lambda"
   },
   "description": "An information system to update an email lists on status of coronovaris (covid-19)",
@@ -17,6 +17,8 @@
   "dependencies": {
     "@sendgrid/mail": "^6.5.5",
     "axios": "^0.19.2",
-    "cheerio": "^1.0.0-rc.3"
+    "cheerio": "^1.0.0-rc.3",
+    "firebase-admin": "^8.10.0",
+    "webpack-node-externals": "^1.7.2"
   }
 }

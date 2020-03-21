@@ -8,21 +8,20 @@ const headers = {
   "Access-Control-Allow-Headers": "Content-Type",
   "Content-Type": "application/json"
 };
-
 const msg = {
   to: "",
   from: SENDGRID_FROM_EMAIL,
   subject: "COVID-19 Update from Ghana Health Service",
-  html: "",
+  html: ""
 };
 
+sendgridMail.setApiKey(SENDGRID_API_KEY);
+
 exports.handler = async (event, context) => {
-  if (event.httpMethod !== "POST") {
+  if (event.httpMethod !== "POST")
     return { statusCode: 405, body: "Method Not Allowed" };
-  }
 
   const requestBody = JSON.parse(event.body);
-  sendgridMail.setApiKey(SENDGRID_API_KEY);
   msg.to = requestBody.to;
   msg.html = requestBody.body;
 

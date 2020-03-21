@@ -9,9 +9,8 @@ const headers = {
 const GHS_WEBSITE_URL = "https://ghanahealthservice.org/covid19/";
 
 exports.handler = async (event, context) => {
-  if (event.httpMethod !== "GET") {
+  if (event.httpMethod !== "GET")
     return { statusCode: 405, body: "Method Not Allowed" };
-  }
 
   try {
     // fetch website html
