@@ -56,7 +56,7 @@ exports.handler = async (event, context) => {
           latestStatusUpdate.title,
           latestStatusUpdate.body_formatted,
           latestStatusUpdate.image,
-          lastScraperRunRecord.number_of_cases
+          scraperFunctionResponse.data.number_of_cases
         )
       });
     }
