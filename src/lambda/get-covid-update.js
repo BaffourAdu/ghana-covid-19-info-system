@@ -47,8 +47,8 @@ exports.handler = async (event, context) => {
     const latestStatusUpdate = scraperFunctionResponse.data.status_updates[0];
 
     if (
-      (scraperFunctionResponse.data.number_of_cases >
-        lastScraperRunRecord.number_of_cases) |
+      (JSON.stringify(scraperFunctionResponse.data.ghana_stats) !==
+        JSON.stringify(lastScraperRunRecord.ghana_stats)) |
       (latestStatusUpdate.body_formatted !==
         lastScraperRunRecord.status_updates[0].body_formatted)
     ) {
@@ -58,8 +58,8 @@ exports.handler = async (event, context) => {
           latestStatusUpdate.title,
           latestStatusUpdate.body_formatted,
           latestStatusUpdate.image,
-					scraperFunctionResponse.data.number_of_cases,
-					scraperFunctionResponse.data.number_of_deaths
+          scraperFunctionResponse.data.ghana_stats,
+          scraperFunctionResponse.data.global_stats
         )
       });
     }
@@ -101,11 +101,23 @@ async function addScraperRun(data) {
   }
 }
 
-function parseEmailBody(title, body, image, cases, deaths) {
+function parseEmailBody(title, body, image, ghana_stats, global_stats) {
+  const ghana_stat = ghana_stats.map(
+    stat => `${stat.title}: ${stat.count}<br>`
+  );
+  const global_stat = global_stats.map(
+    stat => `${stat.title}: ${stat.count}<br>`
+  );
   return `
-		<h3>${cases} Confirmed Cases and ${deaths} Death(s)</h3><hr>
+		<h3>Ghana's Situation: </h3>
+		${ghana_stat.join("")}
+		<hr>
+		<h3>Lastest Update: </h3>
 		<h3>${title}</h3><p>${body}</p> ${image ? `<img src="${image}">` : ``}
-		<p>source: https://ghanahealthservice.org/covid19/</p>
+		<hr>
+		<h3>Global Situation: </h3>
+		${global_stat.join("")}
+		<br><p>source: https://ghanahealthservice.org/covid19/</p>
   `;
 }
 

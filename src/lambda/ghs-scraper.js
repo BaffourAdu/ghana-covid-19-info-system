@@ -27,7 +27,7 @@ exports.handler = async (event, context) => {
 		const GlobalStatsContentBox = $(".widget-box-content", ".widget-box").filter(index => index === 3);
     // Get Ghana Case Stats
 		const GhanaStatsContentBox = $(".widget-box-content", ".widget-box").filter(index => index === 1);
-		console.log(GlobalStatsContentBox.html())
+		
 		$(".information-line", GhanaStatsContentBox).each(function(
       index,
       element

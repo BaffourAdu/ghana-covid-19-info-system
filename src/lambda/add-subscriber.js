@@ -44,16 +44,17 @@ exports.handler = async (event, context) => {
     const latestStatusUpdate = lastScraperRunRecord.status_updates[0];
 
     if (requestBody.email) {
-        subscriberEmail.push(requestBody.email);
-        await axios.post(EMAIL_LAMBDA_FUNCTION, {
-            to: subscriberEmail,
-            body: parseEmailBody(
-              latestStatusUpdate.title,
-              latestStatusUpdate.body_formatted,
-              latestStatusUpdate.image,
-              lastScraperRunRecord.number_of_cases
-            )
-          });
+      subscriberEmail.push(requestBody.email);
+      await axios.post(EMAIL_LAMBDA_FUNCTION, {
+        to: subscriberEmail,
+        body: parseEmailBody(
+          latestStatusUpdate.title,
+          latestStatusUpdate.body_formatted,
+          latestStatusUpdate.image,
+          lastScraperRunRecord.ghana_stats,
+          lastScraperRunRecord.global_stats
+        )
+      });
     }
 
     const subscriberResponse = await addSubscriber(requestBody);
@@ -62,8 +63,8 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-          success: true,
-          message: 'Subscriber added successfully!'
+        success: true,
+        message: "Subscriber added successfully!"
       })
     };
   } catch (error) {
@@ -82,12 +83,24 @@ async function addSubscriber(data) {
   }
 }
 
-function parseEmailBody(title, body, image, cases) {
+function parseEmailBody(title, body, image, ghana_stats, global_stats) {
+  const ghana_stat = ghana_stats.map(
+    stat => `${stat.title}: ${stat.count}<br>`
+  );
+  const global_stat = global_stats.map(
+    stat => `${stat.title}: ${stat.count}<br>`
+  );
   return `
-		<h3>${cases} Confirmed Cases</h3><hr>
-		<h3>${title}</h3><p>${body}</p> ${image ? `<img src="${image}">` : ``}
-		<p>source: https://ghanahealthservice.org/covid19/</p>
-  `;
+          <h3>Ghana's Situation: </h3>
+          ${ghana_stat.join("")}
+          <hr>
+          <h3>Lastest Update: </h3>
+          <h3>${title}</h3><p>${body}</p> ${image ? `<img src="${image}">` : ``}
+          <hr>
+          <h3>Global Situation: </h3>
+          ${global_stat.join("")}
+          <br><p>source: https://ghanahealthservice.org/covid19/</p>
+    `;
 }
 
 async function lastScraperRunResults() {
