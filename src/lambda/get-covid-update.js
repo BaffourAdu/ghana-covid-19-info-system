@@ -65,7 +65,6 @@ exports.handler = async (event, context) => {
     }
 
     const logResponse = await addScraperRun(scraperFunctionResponse.data);
-
     return {
       statusCode: 200,
       headers,
