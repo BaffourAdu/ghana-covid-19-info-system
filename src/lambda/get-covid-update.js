@@ -58,7 +58,8 @@ exports.handler = async (event, context) => {
           latestStatusUpdate.title,
           latestStatusUpdate.body_formatted,
           latestStatusUpdate.image,
-          scraperFunctionResponse.data.number_of_cases
+					scraperFunctionResponse.data.number_of_cases,
+					scraperFunctionResponse.data.number_of_deaths
         )
       });
     }
@@ -100,9 +101,9 @@ async function addScraperRun(data) {
   }
 }
 
-function parseEmailBody(title, body, image, cases) {
+function parseEmailBody(title, body, image, cases, deaths) {
   return `
-		<h3>${cases} confirmed cases</h3><hr>
+		<h3>${cases} Confirmed Cases and ${deaths} Death(s)</h3><hr>
 		<h3>${title}</h3><p>${body}</p> ${image ? `<img src="${image}">` : ``}
 		<p>source: https://ghanahealthservice.org/covid19/</p>
   `;

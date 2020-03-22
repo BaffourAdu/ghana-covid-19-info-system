@@ -20,9 +20,15 @@ exports.handler = async (event, context) => {
     // load website html
     const $ = cheerio.load(response.data);
 
-    // Get number of cases
+    // Get number of confirmed cases
     const number_of_cases = $(".widget-box-content", ".widget-box")
       .filter(index => index === 1)
+      .find("span")
+			.text();
+
+		// Get number of cases
+    const number_of_deaths = $(".widget-box-content", ".widget-box")
+      .filter(index => index === 2)
       .find("span")
       .text();
 
@@ -64,7 +70,8 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        number_of_cases,
+				number_of_cases,
+				number_of_deaths,
         last_update_of_cases_formatted,
         last_update_of_cases_date,
         last_update_of_cases_time,
