@@ -7,6 +7,7 @@ const headers = {
   "Content-Type": "application/json"
 };
 const GHS_WEBSITE_URL = "https://ghanahealthservice.org/covid19/";
+axios.defaults.timeout = 7000;
 
 exports.handler = async (event, context) => {
   if (event.httpMethod !== "GET")
@@ -121,7 +122,10 @@ exports.handler = async (event, context) => {
       })
     };
   } catch (error) {
-    console.log({ error });
+		// console.log({ error });
+		if (error.status === 408 || error.code === 'ECONNABORTED') {
+			return { statusCode: 500, headers, body: `A timeout happend on url ${error.config.url}` };
+    }
     return { statusCode: 422, headers, body: String(error) };
   }
 };

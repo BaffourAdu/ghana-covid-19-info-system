@@ -45,7 +45,7 @@ exports.handler = async (event, context) => {
     const subscribersEmails = subscribers.map(sub => sub.email);
     const scraperFunctionResponse = await axios.get(SCRAPER_LAMBDA_FUNCTION);
     const latestStatusUpdate = scraperFunctionResponse.data.status_updates[0];
-
+		
     if (
       (JSON.stringify(scraperFunctionResponse.data.ghana_stats) !==
         JSON.stringify(lastScraperRunRecord.ghana_stats)) |
