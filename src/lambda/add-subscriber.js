@@ -4,7 +4,6 @@ import admin from "firebase-admin";
 require("dotenv").config();
 
 const { BASE_URL, ACCESS_TOKEN } = process.env;
-const SCRAPER_LAMBDA_FUNCTION = `${BASE_URL}/ghs-scraper`;
 const EMAIL_LAMBDA_FUNCTION = `${BASE_URL}/ghs-send-email-notification`;
 const headers = {
   "Access-Control-Allow-Origin": "*",
@@ -33,42 +32,39 @@ admin.initializeApp({
 const db = admin.firestore();
 
 exports.handler = async (event, context) => {
-  // const requestBody = JSON.parse(event.body);
+  const requestBody = JSON.parse(event.body);
   // if (requestBody.access_token !== ACCESS_TOKEN)
   //   return { statusCode: 401, body: "Unauthorized" };
-  if (event.httpMethod !== "GET")
+  if (event.httpMethod !== "POST")
     return { statusCode: 405, body: "Method Not Allowed" };
 
   try {
     const lastScraperRunRecord = await lastScraperRunResults();
-    const subscribers = await firebaseEmailList();
-    const subscribersEmails = subscribers.map(sub => sub.email);
-    const scraperFunctionResponse = await axios.get(SCRAPER_LAMBDA_FUNCTION);
-    const latestStatusUpdate = scraperFunctionResponse.data.status_updates[0];
+    const subscriberEmail = [];
+    const latestStatusUpdate = lastScraperRunRecord.status_updates[0];
 
-    if (
-      (scraperFunctionResponse.data.number_of_cases >
-        lastScraperRunRecord.number_of_cases) |
-      (latestStatusUpdate.body_formatted !==
-        lastScraperRunRecord.status_updates[0].body_formatted)
-    ) {
-      await axios.post(EMAIL_LAMBDA_FUNCTION, {
-        to: subscribersEmails,
-        body: parseEmailBody(
-          latestStatusUpdate.title,
-          latestStatusUpdate.body_formatted,
-          latestStatusUpdate.image,
-          scraperFunctionResponse.data.number_of_cases
-        )
-      });
+    if (requestBody.email) {
+        subscriberEmail.push(requestBody.email);
+        await axios.post(EMAIL_LAMBDA_FUNCTION, {
+            to: subscriberEmail,
+            body: parseEmailBody(
+              latestStatusUpdate.title,
+              latestStatusUpdate.body_formatted,
+              latestStatusUpdate.image,
+              lastScraperRunRecord.number_of_cases
+            )
+          });
     }
 
-    const logResponse = await addScraperRun(scraperFunctionResponse.data);
+    const subscriberResponse = await addSubscriber(requestBody);
 
     return {
       statusCode: 200,
       headers,
-      body: "Update Success"
+      body: JSON.stringify({
+          success: true,
+          message: 'Subscriber added successfully!'
+      })
     };
   } catch (error) {
     console.log({ error });
@@ -76,24 +72,10 @@ exports.handler = async (event, context) => {
   }
 };
 
-async function firebaseEmailList() {
-  try {
-    const subscriberList = [];
-    const subscribers = await db.collection("subscribers").get();
-    subscribers.forEach(doc => {
-      subscriberList.push(doc.data());
-    });
-    return subscriberList;
-  } catch (error) {
-    console.log({ error });
-    return { statusCode: 422, headers, body: String(error) };
-  }
-}
-
-async function addScraperRun(data) {
+async function addSubscriber(data) {
   try {
     const log = { ...data, timestamp: admin.firestore.Timestamp.now() };
-    return await db.collection("logs").add(log);
+    return await db.collection("subscribers").add(log);
   } catch (error) {
     console.log({ error });
     return { statusCode: 422, headers, body: String(error) };
@@ -102,7 +84,7 @@ async function addScraperRun(data) {
 
 function parseEmailBody(title, body, image, cases) {
   return `
-		<h3>${cases} confirmed cases</h3><hr>
+		<h3>${cases} Confirmed Cases</h3><hr>
 		<h3>${title}</h3><p>${body}</p> ${image ? `<img src="${image}">` : ``}
 		<p>source: https://ghanahealthservice.org/covid19/</p>
   `;
