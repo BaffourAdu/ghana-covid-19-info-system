@@ -16,32 +16,71 @@ exports.handler = async (event, context) => {
     // fetch website html
     const response = await axios.get(GHS_WEBSITE_URL);
     let status_updates = [];
+		let ghana_stats = [];
+		let global_stats = [];
+		let last_update_of_ghana_cases_formatted = "";
+		let last_update_of_global_cases_formatted = "";
 
     // load website html
-    const $ = cheerio.load(response.data);
-
-    // Get number of confirmed cases
-    const number_of_cases = $(".widget-box-content", ".widget-box")
-      .filter(index => index === 1)
-      .find("span")
-			.text();
-
-		// Get number of cases
-    const number_of_deaths = $(".widget-box-content", ".widget-box")
-      .filter(index => index === 2)
-      .find("span")
-      .text();
+		const $ = cheerio.load(response.data);
+		// Get Global Case Stats
+		const GlobalStatsContentBox = $(".widget-box-content", ".widget-box").filter(index => index === 3);
+    // Get Ghana Case Stats
+		const GhanaStatsContentBox = $(".widget-box-content", ".widget-box").filter(index => index === 1);
+		console.log(GlobalStatsContentBox.html())
+		$(".information-line", GhanaStatsContentBox).each(function(
+      index,
+      element
+    ) {
+      if (index == 4) {
+				last_update_of_ghana_cases_formatted = $(this)
+        .find(".information-line-text")
+				.text()
+				.replace(/G.*$/g, "");;
+				return false;
+			}
+      const title = $(this)
+        .find(".information-line-title")
+        .text();
+      const count = $(this)
+        .find(".information-line-text")
+        .text();
+      ghana_stats.push({ title, count });
+		});
+		
+		// Get Global Case Stats
+		$(".information-line", GlobalStatsContentBox).each(function(
+      index,
+      element
+    ) {
+      if (index == 4) {
+				last_update_of_global_cases_formatted = $(this)
+        .find(".information-line-text")
+				.text()
+				.replace(/G.*$/g, "");;
+				return false;
+			}
+      const title = $(this)
+        .find(".information-line-title")
+        .text();
+      const count = $(this)
+        .find(".information-line-text")
+        .text();
+			global_stats.push({ title, count });
+    });
 
     // Get last case time details
-    const last_update_of_cases_formatted = $(".widget-box-title", ".widget-box")
-      .filter(index => index === 2)
-      .text()
-      .replace(/as at\s/g, "")
-      .replace(/G.*$/g, "");
-    const last_update_of_cases_date = last_update_of_cases_formatted
+    const last_update_of_ghana_cases_date = last_update_of_ghana_cases_formatted
       .replace(/\|.*$/g, "")
       .trim();
-    const last_update_of_cases_time = last_update_of_cases_formatted
+    const last_update_of_ghana_cases_time = last_update_of_ghana_cases_formatted
+      .replace(/^.*\|/g, "")
+			.trim();
+			
+		const last_update_of_global_cases_date = last_update_of_global_cases_formatted
+      .replace(/\|.*$/g, "")
+      .trim();
+    const last_update_of_global_cases_time = last_update_of_global_cases_formatted
       .replace(/^.*\|/g, "")
       .trim();
 
@@ -70,11 +109,14 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-				number_of_cases,
-				number_of_deaths,
-        last_update_of_cases_formatted,
-        last_update_of_cases_date,
-        last_update_of_cases_time,
+				ghana_stats,
+				global_stats,
+        last_update_of_ghana_cases_formatted,
+        last_update_of_ghana_cases_date,
+				last_update_of_ghana_cases_time,
+				last_update_of_global_cases_formatted,
+				last_update_of_global_cases_date,
+				last_update_of_global_cases_time,
         status_updates
       })
     };
