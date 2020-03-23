@@ -94,7 +94,7 @@ function parseEmailBody(title, body, image, ghana_stats, global_stats) {
           <h3>Ghana's Situation: </h3>
           ${ghana_stat.join("")}
           <hr>
-          <h3>Lastest Update: </h3>
+          <h3>Lastest Situation Update: </h3>
           <h3>${title}</h3><p>${body}</p> ${image ? `<img src="${image}">` : ``}
           <hr>
           <h3>Global Situation: </h3>

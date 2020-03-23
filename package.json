@@ -19,6 +19,7 @@
     "axios": "^0.19.2",
     "cheerio": "^1.0.0-rc.3",
     "firebase-admin": "^8.10.0",
+    "lodash": "^4.17.15",
     "webpack-node-externals": "^1.7.2"
   }
 }
