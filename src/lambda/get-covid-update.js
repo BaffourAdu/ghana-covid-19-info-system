@@ -1,5 +1,10 @@
 import axios from "axios";
-import { getSubscribersEmailList, getlastScraperRunResults, storeScraperRunResults, parseEmailBody} from "../helpers/index"
+import {
+  getSubscribersEmailList,
+  getlastScraperRunResults,
+  storeScraperRunResults,
+  parseEmailBody
+} from "../helpers/index";
 import { isEqual } from "lodash";
 
 require("dotenv").config();
@@ -21,13 +26,18 @@ exports.handler = async (event, context) => {
     return { statusCode: 405, body: "Method Not Allowed" };
 
   try {
-		const lastScraperRunRecord = await getlastScraperRunResults();
-		const subscribersEmails = await getSubscribersEmailList();
-    const scraperFunctionResponse = await axios.get(SCRAPER_LAMBDA_FUNCTION_URL);
+    const lastScraperRunRecord = await getlastScraperRunResults();
+    const subscribersEmails = await getSubscribersEmailList();
+    const scraperFunctionResponse = await axios.get(
+      SCRAPER_LAMBDA_FUNCTION_URL
+    );
     const latestStatusUpdate = scraperFunctionResponse.data.status_updates[0];
 
-		if (
-      (!isEqual(scraperFunctionResponse.data.ghana_stats, lastScraperRunRecord.ghana_stats)) |
+    if (
+      !isEqual(
+        scraperFunctionResponse.data.ghana_stats,
+        lastScraperRunRecord.ghana_stats
+      ) |
       (latestStatusUpdate.body_formatted !==
         lastScraperRunRecord.status_updates[0].body_formatted)
     ) {
@@ -43,7 +53,9 @@ exports.handler = async (event, context) => {
       });
     }
 
-    const logResponse = await storeScraperRunResults(scraperFunctionResponse.data);
+    const logResponse = await storeScraperRunResults(
+      scraperFunctionResponse.data
+    );
     return {
       statusCode: 200,
       headers,
@@ -54,10 +66,3 @@ exports.handler = async (event, context) => {
     return { statusCode: 422, headers, body: String(error) };
   }
 };
-
-
-
-
-
-
-

@@ -38,3 +38,13 @@ export async function getlastScraperRunResults() {
   });
   return cases[0];
 }
+
+export async function storeSubscriber(data) {
+  try {
+    const log = { ...data, timestamp: admin.firestore.Timestamp.now() };
+    return await db.collection("subscribers").add(log);
+  } catch (error) {
+    console.log({ error });
+    return null;
+  }
+}
