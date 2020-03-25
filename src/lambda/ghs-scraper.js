@@ -25,14 +25,24 @@ exports.handler = async (event, context) => {
     // load website html
 		const $ = cheerio.load(response.data);
 		// Get Global Case Stats
-		const GlobalStatsContentBox = $(".widget-box-content", ".widget-box").filter(index => index === 3);
+		const GlobalStatsContentBox = $(".widget-box-content", ".widget-box").filter(index => index === 4);
     // Get Ghana Case Stats
-		const GhanaStatsContentBox = $(".widget-box-content", ".widget-box").filter(index => index === 1);
-		
+		const GhanaStatsContentBox = $(".widget-box-content", ".widget-box").filter(index => index === 2);
+		const GhanaConfirmedCasesContentBox = $(".widget-box-content", ".widget-box").filter(index => index === 1);
+
+		ghana_stats.push({ 
+			title: "Confirmed", 
+			count:  $("div", GhanaConfirmedCasesContentBox).find('span').text()
+		});
+
+
 		$(".information-line", GhanaStatsContentBox).each(function(
       index,
       element
     ) {
+			console.log($(this)
+			.find(".information-line-text")
+			.text())
       if (index == 4) {
 				last_update_of_ghana_cases_formatted = $(this)
         .find(".information-line-text")
